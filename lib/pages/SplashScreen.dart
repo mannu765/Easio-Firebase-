@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easio/pages/LoginPage.dart';
-import 'package:easio/pages/homescreen.dart';
+import 'package:easio/pages/HomeScreen.dart';
 import 'package:easio/utils/string.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +21,14 @@ class SplashScreen extends StatefulWidget {
 class SplashScreenState extends State<SplashScreen> {
   var splashTime = 3;
   static const String keyLogin = login1;
-  static const String detailLogin =detaiLogin;
-  static const String doctorId ='doctorId';
+  static const String detailLogin = detaiLogin;
+  static const String doctorId = 'doctorId';
+
   Future<void> getDoctorData() async {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) return;
-    // print("USer ID uis thadfjha ${user.uid}");
-
+    // print("USer ID uis  ${user.uid}");
 
     await FirebaseFirestore.instance
         .collection('Doctor')
@@ -36,14 +36,11 @@ class SplashScreenState extends State<SplashScreen> {
         .get()
         .then((DocumentSnapshot docSnapshot) {
       if (docSnapshot.exists) {
-        docPhoto=docSnapshot['image'];
+        docPhoto = docSnapshot['image'];
         docName = docSnapshot['name'];
         docEmail = docSnapshot['email'];
         docUPI = docSnapshot['upi'];
         docPhoneNumber = docSnapshot['phone'];
-
-        // print(docSnapshot['email']);
-        // print(docSnapshot['upi']);
       } else {
         showSnackBarText('Document does not exist on Firestore');
       }
@@ -51,6 +48,7 @@ class SplashScreenState extends State<SplashScreen> {
       // showSnackBarText('Error getting document: $error');
     });
   }
+
   void showSnackBarText(String text) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -62,10 +60,8 @@ class SplashScreenState extends State<SplashScreen> {
     );
   }
 
-
   @override
   void initState() {
-
     whereTo();
     super.initState();
   }
@@ -73,7 +69,7 @@ class SplashScreenState extends State<SplashScreen> {
   void whereTo() async {
     var isLoggedIn = sharedPref!.getBool(keyLogin);
     var isMode = sharedPref!.getBool(detailLogin);
-    var isUserId =sharedPref!.getString(doctorId);
+
 
     docPhoto ??= '';
 
@@ -84,31 +80,27 @@ class SplashScreenState extends State<SplashScreen> {
     }
     // print(isMobileLogin);
 
-
     Future.delayed(Duration(seconds: splashTime), () async {
-      if (isLoggedIn == true ) {
+      if (isLoggedIn == true) {
         await getDoctorData();
-        if(!mounted){return ;}
+        if (!mounted) {
+          return;
+        }
 
-
-
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return const HomeScreen();
-              },
-            ),
-          );
-
-
-
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return const HomeScreen();
+            },
+          ),
+        );
       } else {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) {
-              return  const LoginPage();
+              return const LoginPage();
             },
           ),
         );
@@ -118,6 +110,8 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: splashScreen(),
     );
@@ -131,8 +125,8 @@ class SplashScreenState extends State<SplashScreen> {
         //vertically align center
         children: <Widget>[
           SizedBox(
-            height: screenHeight! *0.22,
-            width: screenWidth! *0.37,
+            height: screenHeight! * 0.22,
+            width: screenWidth! * 0.37,
             child: Lottie.asset(lottieAnimation),
           ),
           const Text(

@@ -223,8 +223,8 @@ Future<List<PatientData>> filterPatients(
 
   // Filter by session days
   else if (daysList!.isNotEmpty &&
-          ageRanges.isEmpty &&
-          fromDate == DateTime.utc(1900, 1, 1) &&
+      ageRanges.isEmpty &&
+      fromDate == DateTime.utc(1900, 1, 1) &&
       toDate == DateTime.utc(2100, 12, 31)) {
     // print('2');
     final dayValues = daysList.map((dayMap) => dayMap['day']!).toList();
@@ -267,8 +267,6 @@ Future<List<PatientData>> filterPatients(
         // print('fromDate $fromDate');
         final fromDateVal = DateTime.parse(fromStr);
         final toDateVal = DateTime.parse(toStr);
-
-
 
         if (fromDateVal.isBefore(toDate!) && toDateVal.isAfter(fromDate!)) {
           patientList.add(PatientData.fromSnapshot(patientSnapshot));
@@ -368,10 +366,10 @@ Future<List<PatientData>> filterPatients(
     }
   } //101 .......
 
-  else if(daysList.isNotEmpty &&
+  else if (daysList.isNotEmpty &&
       ageRanges.isNotEmpty &&
       fromDate == DateTime.utc(1900, 1, 1) &&
-      toDate == DateTime.utc(2100, 12, 31)){
+      toDate == DateTime.utc(2100, 12, 31)) {
     // print('544');
     final dayValues = daysList.map((dayMap) => dayMap['day']!).toList();
     for (Map<String, int> ageRangeMap in ageRanges) {
@@ -391,11 +389,11 @@ Future<List<PatientData>> filterPatients(
       }
 
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-      await query.orderBy('age', descending: false).get();
+          await query.orderBy('age', descending: false).get();
 
       if (querySnapshot.docs.isNotEmpty) {
         for (QueryDocumentSnapshot<Map<String, dynamic>> patientSnapshot
-        in querySnapshot.docs) {
+            in querySnapshot.docs) {
           final patientData = PatientData.fromSnapshot(patientSnapshot);
           final sessionDaysList = patientData.sessionDay.split(',');
 
@@ -409,19 +407,14 @@ Future<List<PatientData>> filterPatients(
       }
     }
 
-
     // Sort patient list by name
 
-  }//110
+  } //110
 
-
-
-
-
-  else if(daysList.isNotEmpty &&
+  else if (daysList.isNotEmpty &&
       ageRanges.isNotEmpty &&
       fromDate != DateTime.utc(1900, 1, 1) &&
-      toDate != DateTime.utc(2100, 12, 31)){
+      toDate != DateTime.utc(2100, 12, 31)) {
     final dayValues = daysList.map((dayMap) => dayMap['day']!).toList();
     for (Map<String, int> ageRangeMap in ageRanges) {
       int? minAge = ageRangeMap['lower'];
@@ -440,11 +433,11 @@ Future<List<PatientData>> filterPatients(
       }
 
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-      await query.orderBy('age', descending: false).get();
+          await query.orderBy('age', descending: false).get();
 
       if (querySnapshot.docs.isNotEmpty) {
         for (QueryDocumentSnapshot<Map<String, dynamic>> patientSnapshot
-        in querySnapshot.docs) {
+            in querySnapshot.docs) {
           final fromToDateStr = patientSnapshot.data()['fromToDate'];
           final fromToDateArr = fromToDateStr.split(' to ');
           final fromStr = fromToDateArr[0];
@@ -471,12 +464,7 @@ Future<List<PatientData>> filterPatients(
         // print(patientList.length);
       }
     }
-
-
-
-
   }
-
 
   patientList.sort((a, b) => a.name.compareTo(b.name));
   return patientList;

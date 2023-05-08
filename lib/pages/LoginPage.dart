@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:easio/pages/homescreen.dart';
+import 'package:easio/pages/HomeScreen.dart';
 import 'package:easio/utils/variables.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,7 +38,6 @@ class _LoginPageState extends State<LoginPage> {
   bool isVerifyingNo = false;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -51,8 +50,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
 
-
-
     return Scaffold(
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
@@ -62,28 +59,31 @@ class _LoginPageState extends State<LoginPage> {
         );
   }
 
-    Future<void> addDoctor() async {
+  Future<void> addDoctor() async {
     final user = FirebaseAuth.instance.currentUser;
     CollectionReference easio = firestore.collection('Doctor');
     // Call the user's CollectionReference to add a new user with the user's UID as the document ID
     DocumentReference userDocRef = easio.doc(user?.uid);
     DocumentSnapshot querySnapshot = await userDocRef.get();
     if (querySnapshot.exists) {
-      if(!mounted){return ;}
-      showSnackBarText('Welcome Back');
+      if (!mounted) {
+        return;
+      }
+      showSnackBarText(welcome);
       return;
     }
     return userDocRef
         .set({
-      'doctor_id': user?.uid,
-      'time_stamp': DateTime.now(),
-    })
-        .then((value) => showSnackBarText("User Added"))
+          'doctor_id': user?.uid,
+          'time_stamp': DateTime.now(),
+        })
+        .then((value) => showSnackBarText(userAdded))
         .catchError((error) {
-      if (!mounted) {
-        return;
-      }
-          showSnackBarText("Failed to add user: $error");});
+          if (!mounted) {
+            return;
+          }
+          showSnackBarText("$failedToAdd $error");
+        });
   }
 
   Future<void> getDoctorData() async {
@@ -92,14 +92,13 @@ class _LoginPageState extends State<LoginPage> {
     if (user == null) return;
     // print("USer ID uis thadfjha ${user.uid}");
 
-
-   await FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('Doctor')
         .doc(user.uid)
         .get()
         .then((DocumentSnapshot docSnapshot) {
       if (docSnapshot.exists) {
-        docPhoto=docSnapshot['image'];
+        docPhoto = docSnapshot['image'];
         docName = docSnapshot['name'];
         docEmail = docSnapshot['email'];
         docUPI = docSnapshot['upi'];
@@ -108,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
         // print(docSnapshot['email']);
         // print(docSnapshot['upi']);
       } else {
-        showSnackBarText('Document does not exist on Firestore');
+        showSnackBarText(doesntExist);
       }
     }).catchError((error) {
       // showSnackBarText('Error getting document: $error');
@@ -119,7 +118,8 @@ class _LoginPageState extends State<LoginPage> {
     // perform login logic here
     sharedPref!.setBool(SplashScreenState.keyLogin, true);
     sharedPref!.setBool(SplashScreenState.detailLogin, true);
-    sharedPref!.setString(SplashScreenState.doctorId, FirebaseAuth.instance.currentUser!.uid);
+    sharedPref!.setString(
+        SplashScreenState.doctorId, FirebaseAuth.instance.currentUser!.uid);
 
     isMobileLogin = true;
     if (!mounted) {
@@ -129,7 +129,9 @@ class _LoginPageState extends State<LoginPage> {
     addDoctor();
     await getDoctorData();
 
-if(!mounted){return ;}
+    if (!mounted) {
+      return;
+    }
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -216,7 +218,6 @@ if(!mounted){return ;}
     // Once signed in, return the UserCredential
 
     return await FirebaseAuth.instance.signInWithCredential(credential);
-
   }
 
   login() {
@@ -225,8 +226,8 @@ if(!mounted){return ;}
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           SizedBox(
-            height:  screenHeight! *0.059,
+          SizedBox(
+            height: screenHeight! * 0.065,
           ),
           const Text(
             easio,
@@ -237,8 +238,8 @@ if(!mounted){return ;}
           Column(
             // mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-               SizedBox(
-                height:  screenHeight! *0.21,
+              SizedBox(
+                height: screenHeight! * 0.21,
               ),
               const Center(
                 child: Text(
@@ -250,24 +251,24 @@ if(!mounted){return ;}
                       fontSize: 24),
                 ),
               ),
-               SizedBox(
-                height:  screenHeight! *0.089,
+              SizedBox(
+                height: screenHeight! * 0.075,
               ),
               Visibility(
                 visible: visibleForLoginScreen,
                 child: Container(
-                  height:  screenHeight! *0.081,
+                  height: screenHeight! * 0.081,
                   decoration: BoxDecoration(
                       border: Border.all(width: 1, color: greyColor),
                       borderRadius: BorderRadius.circular(10)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                       SizedBox(
-                        width: screenWidth! *0.025,
+                      SizedBox(
+                        width: screenWidth! * 0.025,
                       ),
                       SizedBox(
-                        width: screenWidth! *0.098,
+                        width: screenWidth! * 0.098,
                         child: TextField(
                           enabled: false,
                           controller: countryController,
@@ -279,11 +280,10 @@ if(!mounted){return ;}
                       ),
                       Text(
                         bar,
-                        style:
-                            const TextStyle(fontSize: 33, color:greyColor),
+                        style: const TextStyle(fontSize: 33, color: greyColor),
                       ),
-                       SizedBox(
-                        width: screenWidth! *0.025,
+                      SizedBox(
+                        width: screenWidth! * 0.025,
                       ),
                       Expanded(
                           child: TextField(
@@ -299,7 +299,7 @@ if(!mounted){return ;}
                 ),
               ),
               //forPhoneInput
-               SizedBox(height:  screenHeight! *0.030),
+              SizedBox(height: screenHeight! * 0.030),
 
               Visibility(
                 visible: !visibleForLoginScreen,
@@ -312,9 +312,7 @@ if(!mounted){return ;}
               ),
               //forCodeInput
               Row(
-
                 children: [
-
                   Visibility(
                     visible: !visibleForLoginScreen,
                     child: TextButton(
@@ -355,129 +353,92 @@ if(!mounted){return ;}
                 ),
               ),
               //forCodeInput
-               SizedBox(height:  screenHeight! *0.030),
-
-              // SizedBox(
-              //   width: 390,
-              //   child: StatefulBuilder(
-              //     builder: (BuildContext context, StateSetter setState) {
-              //       return ElevatedButton(
-              //         style: ElevatedButton.styleFrom(
-              //           shape: RoundedRectangleBorder(
-              //             borderRadius: BorderRadius.circular(20),
-              //           ),
-              //         ),
-              //         onPressed: () async {
-              //           if (visibleForLoginScreen == true) {
-              //             if (phoneNo.text.length != 10) {
-              //               showSnackBarText(validPhone);
-              //             } else {
-              //               verifyPhone('$countryCode${phoneNo.text}');
-              //             }
-              //           } else {
-              //             setState(() {
-              //               isVerifyingOTP = true;
-              //             });
-              //             await verifyOTP().then((_) {
-              //               setState(() {
-              //                 isVerifyingOTP = false;
-              //               });
-              //             });
-              //
-              //
-              //           }
-              //         },
-              //         // child: isVerifyingOTP
-              //         //     ? const CircularProgressIndicator(
-              //         //   strokeWidth: 3,
-              //         //         color: whiteColor,
-              //         //       )
-              //         child:  const Text(submitText),
-              //       );
-              //     },
-              //   ),
-              // ),
+              SizedBox(height: screenHeight! * 0.015),
 
 
 
-
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        onPressed: () async {
-          if (visibleForLoginScreen == true) {
-            if(phoneNo.text.isEmpty){
-              showSnackBarText(emptyFields);
-            }
-            else if (phoneNo.text.length != 10) {
-              showSnackBarText(validPhone);
-            } else {
-              showDialog(
-                context: context,
-                barrierDismissible: false, // prevent user from dismissing the dialog box
-                builder: (BuildContext context) {
-                  return Dialog(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Row(
-                        children:  [
-                          const CircularProgressIndicator(
-                            strokeWidth: 3,
-                            color: blackColor,
-                          ),
-                          SizedBox(width: screenWidth! *0.049),
-                          const Text("Hold on a second"),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-              // setState(() {
-              //   isVerifyingNo = true;
-              // });
-               verifyPhone('$countryCode${phoneNo.text}');
-
-            }
-          } else {
-            showDialog(
-              context: context,
-              barrierDismissible: false, // prevent user from dismissing the dialog box
-              builder: (BuildContext context) {
-                return Dialog(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      children: const [
-                        CircularProgressIndicator(
-                          strokeWidth: 3,
-                          color: blackColor,
-                        ),
-                        SizedBox(width: 20),
-                        Text("Verifying OTP..."),
-                      ],
-                    ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                );
-              },
-            );
-            setState(() {
-              isVerifyingOTP = true;
-            });
-            await verifyOTP().then((_) {
-              setState(() {
-                isVerifyingOTP = false;
-              });
-               // Dismiss the dialog box
-            });
-          }
-        },
-        child: const Text(submitText),
-      ),
-      Visibility(
+                ),
+                onPressed: () async {
+                  if (visibleForLoginScreen == true) {
+                    if (phoneNo.text.isEmpty) {
+                      showSnackBarText(emptyFields);
+                    } else if (phoneNo.text.length != 10) {
+                      showSnackBarText(validPhone);
+                    } else {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        // prevent user from dismissing the dialog box
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            child: Padding(
+                              padding: EdgeInsets.all(
+                                screenWidth! * 0.05,
+                              ),
+                              child: Row(
+                                children: [
+                                  const CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                    color: blackColor,
+                                  ),
+                                  SizedBox(width: screenWidth! * 0.049),
+                                  const Text(wait),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                      // setState(() {
+                      //   isVerifyingNo = true;
+                      // });
+                      verifyPhone('$countryCode${phoneNo.text}');
+                    }
+                  } else {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      // prevent user from dismissing the dialog box
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          child: Padding(
+                            padding: EdgeInsets.all(
+                              screenWidth! * 0.05,
+                            ),
+                            child: Row(
+                              children:  [
+                                const CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  color: blackColor,
+                                ),
+                                SizedBox(width: screenWidth!*0.049),
+                                const Text(verifyingOTP),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                    setState(() {
+                      isVerifyingOTP = true;
+                    });
+                    await verifyOTP().then((_) {
+                      setState(() {
+                        isVerifyingOTP = false;
+                      });
+                      // Dismiss the dialog box
+                    });
+                  }
+                },
+                child: const Text(submitText),
+              ),
+              SizedBox(height: screenHeight! * 0.015),
+              Visibility(
                 visible: visibleForLoginScreen,
                 child: const Text(
                   continueWith,
@@ -486,36 +447,10 @@ if(!mounted){return ;}
                   ),
                 ),
               ),
-               SizedBox(
-                height:  screenHeight! *0.015,
+              SizedBox(
+                height: screenHeight! * 0.030,
               ),
-              // Visibility(
-              //   visible: visibleForLoginScreen,
-              //   child: GestureDetector(
-              //     child: SizedBox(
-              //       height: 50,
-              //       width: 70,
-              //
-              //       child: Image.asset("assets/ab.jpeg"),
-              //     ),
-              //     onTap: ()async {
-              //       userCredential = await signInWithGoogle();
-              //       if (userCredential!.user != null) {
-              //         final navigator=  Navigator.of(context);
-              //         sharedPref.setBool(SplashScreenState.keyLogin, true);
-              //         sharedPref.setBool(SplashScreenState.detailLogin, false);
-              //         isMobileLogin=false;
-              //         navigator.pushReplacement(
-              //           MaterialPageRoute(
-              //             builder: (context) => const HomeScreen(),
-              //           ),
-              //         );
-              //       }
-              //
-              //     },
-              //
-              //   ),
-              // ),
+
               Visibility(
                 visible: visibleForLoginScreen,
                 child: GestureDetector(
@@ -526,7 +461,7 @@ if(!mounted){return ;}
                           return;
                         }
                         final navigator = Navigator.of(context);
-                        addDoctor();
+                        await addDoctor();
                         await getDoctorData();
                         navigator.pushReplacement(
                           MaterialPageRoute(
@@ -536,11 +471,10 @@ if(!mounted){return ;}
 
                         isMobileLogin = false;
                         sharedPref!.setBool(SplashScreenState.keyLogin, true);
-                        sharedPref!.setBool(SplashScreenState.detailLogin, false);
-
+                        sharedPref!
+                            .setBool(SplashScreenState.detailLogin, false);
                       }
                     });
-
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -550,16 +484,15 @@ if(!mounted){return ;}
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    width: screenWidth! *0.93,
-
+                    width: screenWidth! * 0.93,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Icon(MdiIcons.google);
                         Image.asset(
                           googleIcon,
-                          width: screenWidth! *0.098,
-                          height: screenHeight! *0.059,
+                          width: screenWidth! * 0.098,
+                          height: screenHeight! * 0.059,
                         ),
                         const Text(signIn),
                       ],
@@ -582,17 +515,23 @@ if(!mounted){return ;}
 
   @override
   dispose() {
+    phoneNo.clear();
+    otpController.clear();
+    countryController.clear();
     super.dispose();
   }
+
   Widget showProgressDialogWidget() {
     return Dialog(
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(
+          screenWidth! * 0.05,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children:  [
+          children: [
             const CircularProgressIndicator(),
-            SizedBox(width: screenWidth!*0.049),
+            SizedBox(width: screenWidth! * 0.049),
             const Text(verifyingOTP),
           ],
         ),
@@ -600,6 +539,3 @@ if(!mounted){return ;}
     );
   }
 }
-
-
-

@@ -32,7 +32,7 @@ class _EditDocDetailsState extends State<EditDocDetails> {
   bool disableEmail = true;
   bool disableNo = true;
   String downloadUrl='';
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore fireStore = FirebaseFirestore.instance;
   final AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
 
   void showSnackBarText(String text) {
@@ -48,7 +48,7 @@ class _EditDocDetailsState extends State<EditDocDetails> {
 
   Future<void> setUser() async {
     final user = FirebaseAuth.instance.currentUser;
-    CollectionReference easio = firestore.collection('Doctor');
+    CollectionReference easio = fireStore.collection('Doctor');
 
     DocumentReference userDocRef = easio.doc(user?.uid);
 
@@ -67,16 +67,16 @@ class _EditDocDetailsState extends State<EditDocDetails> {
           docEmail =docEmailController.text;
          docUPI=docUPIController.text;
          docPhoneNumber=docPhoneNumberController.text;
-        showSnackBarText("User data updated");
+        showSnackBarText(doctorUpdated);
         Navigator.pop(context);
       }).catchError((error) {
         if (!mounted) {
           return;
         }
-        showSnackBarText("Failed to update user data: $error");
+        showSnackBarText("$updateFailed  $error");
       },);
     } else {
-      showSnackBarText("Failed to update user data: User ID is null");
+      showSnackBarText(userNull);
     }
   }
 
@@ -95,10 +95,9 @@ class _EditDocDetailsState extends State<EditDocDetails> {
         docEmail = docSnapshot['email'];
         docUPI = docSnapshot['upi'];
         docPhoneNumber = docSnapshot['phone'];
-        // print(docSnapshot['email']);
-        // print(docSnapshot['upi']);
-      } else {
-        showSnackBarText('Document does not exist on Firestore');
+              }
+      else {
+        showSnackBarText(doesntExist);
       }
     }).catchError((error) {
       // showSnackBarText('Error getting document: $error');
@@ -138,9 +137,6 @@ class _EditDocDetailsState extends State<EditDocDetails> {
     if (pickedImage != null) {
       base64Image2 = base64Encode(File(pickedImage.path).readAsBytesSync());
       doctorPhoto = base64Image2;
-
-      // PhysioDatabase.db.updateProfilePhoto(cred!, doctorPhoto);
-
       setState(() {
         docImage = base64Decode(base64Image2);
       });
@@ -149,15 +145,16 @@ class _EditDocDetailsState extends State<EditDocDetails> {
 @override
   void dispose() {
     // TODO: implement dispose
-
-    super.dispose();
+  docNameController.clear();
+  docEmailController.clear();
+  docPhoneNumberController.clear();
+  docUPIController.clear();
+  super.dispose();
   }
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
-    print(screenWidth);
-    print(screenHeight);
+
+
     return GestureDetector(
       child: Scaffold(
         body: settingsBody(context),
@@ -190,45 +187,48 @@ class _EditDocDetailsState extends State<EditDocDetails> {
                 SizedBox(
                   width: screenWidth! * 0.75,
                 ),
-                IconButton(
-                  onPressed: () async {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false, // prevent user from dismissing the dialog box
-                      builder: (BuildContext context) {
-                        return Dialog(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Row(
-                              children: const [
-                                CircularProgressIndicator(
-                                  strokeWidth: 3,
-                                  color: blackColor,
-                                ),
-                                SizedBox(width: 20),
-                                Text("Updating your details, hang on"),
-                              ],
+                Expanded(
+                  flex: 1,
+                  child: IconButton(
+                    onPressed: () async {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false, // prevent user from dismissing the dialog box
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            child: Padding(
+                              padding:  EdgeInsets.all(screenWidth! * 0.05,),
+                              child: Row(
+                                children:  [
+                                  const CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                    color: blackColor,
+                                  ),
+                                  SizedBox(width: screenWidth! * 0.049,),
+                                  const Text(wait),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );//progressIndicator
-                    if(docImage!=null){
-                      Reference ref=storageReference.child('images/${user!.uid}.jpg');
-                      UploadTask uploadTask = ref.putData(docImage!);
-                      TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
-                      downloadUrl = await snapshot.ref.getDownloadURL();
-                    }
-                    else{
-                      downloadUrl="";
-                    }
-                    await setUser();
-                    if(!mounted){return ;}
-                    Navigator.pop(context);
-                    // getDoctorData();
-                  },
-                   icon: const Icon(
-                    Icons.check,
+                          );
+                        },
+                      );//progressIndicator
+                      if(docImage!=null){
+                        Reference ref=storageReference.child('images/${user!.uid}.jpg');
+                        UploadTask uploadTask = ref.putData(docImage!);
+                        TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
+                        downloadUrl = await snapshot.ref.getDownloadURL();
+                      }
+                      else{
+                        downloadUrl="";
+                      }
+                      await setUser();
+                      if(!mounted){return ;}
+                      Navigator.pop(context);
+                      // getDoctorData();
+                    },
+                     icon: const Icon(
+                      Icons.check,
+                    ),
                   ),
                 )
               ],
@@ -256,10 +256,10 @@ class _EditDocDetailsState extends State<EditDocDetails> {
                 ),
               ),
               Positioned(
-                left: screenWidth! * 0.151,
-                top: screenHeight! * 0.095,
+                left: screenWidth! * 0.159,
+                top: screenHeight! * 0.099,
                 child: Container(
-                  width: screenWidth! * 0.092,
+                  width: screenWidth! * 0.094,
                   height: screenHeight! * 0.056,
                   decoration: const BoxDecoration(
                     color: lightBlueColor,
@@ -268,7 +268,7 @@ class _EditDocDetailsState extends State<EditDocDetails> {
                   child: IconButton(
                     icon: const Icon(Icons.camera_alt),
                     color: blackColor,
-                    iconSize: 23,
+                    iconSize: 20,
                     onPressed: () {
                       bottomSheet();
                     },
@@ -285,7 +285,7 @@ class _EditDocDetailsState extends State<EditDocDetails> {
               height: screenHeight! * 0.022,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              padding:  EdgeInsets.fromLTRB(screenWidth!*0.05, 0, screenWidth!*0.05, 0),
               child: TextFormField(
                 controller: docNameController,
                 decoration: const InputDecoration(
@@ -307,7 +307,7 @@ class _EditDocDetailsState extends State<EditDocDetails> {
               height: screenHeight! * 0.022,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              padding:  EdgeInsets.fromLTRB(screenWidth!*0.05, 0, screenWidth!*0.05, 0),
               child: TextFormField(
                  // style: const TextStyle(color: black54Color),
                 enabled: disableEmail,
@@ -327,16 +327,14 @@ class _EditDocDetailsState extends State<EditDocDetails> {
               height: screenHeight! * 0.022,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              padding: EdgeInsets.fromLTRB(screenWidth!*0.05, 0, screenWidth!*0.05, 0),
               child: TextFormField(
                 // enabled: formEnabler,
                 controller: docPhoneNumberController,
                 enabled: disableNo,
                 autovalidateMode: _autoValidateMode,
                 maxLength: 10,
-                // validator: (input) => input!.validatePhone()
-                //     ? null
-                //     : validPhone,
+
                 decoration: const InputDecoration(
                   labelText: phoneNumber,
                   hintText: phoneNumber,
@@ -363,7 +361,7 @@ class _EditDocDetailsState extends State<EditDocDetails> {
               height: screenHeight! * 0.022,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              padding: EdgeInsets.fromLTRB(screenWidth!*0.05, 0, screenWidth!*0.05, 0),
               child: TextFormField(
                 controller: docUPIController,
                 decoration: const InputDecoration(

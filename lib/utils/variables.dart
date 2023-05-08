@@ -13,6 +13,8 @@ TextEditingController docUPIController = TextEditingController();
 String? docPhoto;
 double? screenWidth;
 double? screenHeight;
+List<Map<String, String>> daysList = [];
+List<Map<String, int>> result = [];
 bool editIconVisibility=false;
 String dayOfWeek = '';
 bool submit= true;
