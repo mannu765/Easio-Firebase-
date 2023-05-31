@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "914956295249",
+    "project_id": "easio-8d5d9",
+    "storage_bucket": "easio-8d5d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:914956295249:android:fddc72ac6693e1b4222c70",
+        "android_client_info": {
+          "package_name": "com.example.easio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "914956295249-ps1j6edvsu4aalna1c9ju271asort9ke.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.easio",
+            "certificate_hash": "4c4a40b6dab7d819089555385121eadfb5100ba1"
+          }
+        },
+        {
+          "client_id": "914956295249-qiopord7mlqem31vnsfnfa3fql7q7523.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2cn3fyJ7rxatKQA0IxftyzwvjxhtiYDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "914956295249-bmc18j7ptqffogrufe5n3aj07fu86rn5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
